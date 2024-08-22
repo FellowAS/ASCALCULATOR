@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .calculator {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .calculator h2 {
+            margin-bottom: 20px;
+        }
+        .calculator label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .calculator input[type="text"], .calculator select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .calculator input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .calculator button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .calculator button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>Stats Calculator</h2>
+        <label for="trainingArea">Training Area</label>
+        <select id="trainingArea">
+            <option value="1">x1</option>
+            <option value="5">x5</option>
+            <option value="15">x15</option>
+            <option value="50">x50</option>
+            <option value="100">x100</option>
+            <option value="500">x500</option>
+            <option value="1000">x1000</option>
+            <option value="2500">x2500</option>
+            <option value="5000">x5000</option>
+        </select>
+        <label for="statsMultiplier">Stats Multiplier</label>
+        <select id="statsMultiplier" multiple>
+            <option value="1">x1</option>
+            <option value="2">x2</option>
+            <option value="4">x4</option>
+            <option value="8">x8</option>
+            <option value="16">x16</option>
+            <option value="32">x32</option>
+            <option value="64">x64</option>
+            <option value="128">x128</option>
+            <option value="256">x256</option>
+            <option value="512">x512</option>
+            <option value="1024">x1024</option>
+            <option value="2048">x2048</option>
+            <option value="4096">x4096</option>
+            <option value="8192">x8192</option>
+            <option value="16384">x16.38k</option>
+            <option value="32768">x32.76k</option>
+            <option value="65536">x65.53k</option>
+            <option value="131072">x131.07k</option>
+            <option value="262144">x262.14k</option>
+            <option value="524288">x524.28k</option>
+            <option value="1048576">x1.048M</option>
+        </select>
+        <label for="statType">Stat Type</label>
+        <select id="statType">
+            <option value="Strength">Strength</option>
+            <option value="Defense">Defense</option>
+            <option value="Energy">Energy</option>
+            <option value="Sword">Sword</option>
+        </select>
+        <label><input type="checkbox" id="gamepass"> x1.5 Gamepass</label>
+        <label><input type="checkbox" id="ugc"> UGC</label>
+        <label><input type="checkbox" id="weekendBoost"> Weekend Boost</label>
+        <label><input type="checkbox" id="trainingBoost"> Training Boost</label>
+        <label for="currentStats">Current Stats</label>
+        <input type="text" id="currentStats" placeholder="Enter current stats">
+        <label for="neededStats">Needed Stats</label>
+        <input type="text" id="neededStats" placeholder="Enter needed stats">
+        <label for="timePeriod">Select Time Period</label>
+        <select id="timePeriod">
+            <option value="minute">Minute</option>
+            <option value="hour">Hour</option>
+            <option value="day">Day</option>
+            <option value="week">Week</option>
+        </select>
+        <label for="timeAmount">Enter Amount</label>
+        <input type="text" id="timeAmount" placeholder="Enter amount (e.g., 1)">
+        <button onclick="calculateStats()">Calculate</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculateStats() {
+            const trainingArea = parseInput(document.getElementById('trainingArea').value);
+            const statsMultiplier = Array.from(document.getElementById('statsMultiplier').selectedOptions).map(option => parseInput(option.value)).reduce((a, b) => a * b, 1);
+            const statType = document.getElementById('statType').value;
+            const gamepass = document.getElementById('gamepass').checked;
+            const ugc = document.getElementById('ugc').checked;
+            const weekendBoost = document.getElementById('weekendBoost').checked;
+            const trainingBoost = document.getElementById('trainingBoost').checked;
+            const currentStats = parseInput(document.getElementById('currentStats').value);
+            const neededStats = parseInput(document.getElementById('neededStats').value);
+            const timePeriod = document.getElementById('timePeriod').value;
+            const timeAmount = parseInput(document.getElementById('timeAmount').value);
+            const result = document.getElementById('result');
+
+            if (trainingArea && statsMultiplier && timePeriod && timeAmount) {
+                let calculatedStats = trainingArea * statsMultiplier;
+                const ticksPerMinute = getTicksPerMinute(statType);
+                let statsPerTick = calculatedStats;
+
+                if (gamepass) statsPerTick *= 1.5;
+                if (ugc) statsPerTick *= 1.1;
+                if (weekendBoost) statsPerTick *= 1.5;
+                if (trainingBoost) statsPerTick *= 1.5;
+
+                const finalStats = statsPerTick * ticksPerMinute;
+                let timeRequired = '';
+
+                if (currentStats && neededStats) {
+                    const statsDifference = neededStats - currentStats;
+                    let totalMinutes = statsDifference / finalStats;
+                    const minutes = Math.floor(totalMinutes);
+                    const seconds = Math.floor((totalMinutes - minutes) * 60);
+                    timeRequired = `Time Required: ${minutes} minutes and ${seconds} seconds`;
+                }
+
+                let periodResults = '';
+                const periods = {
+                    'minute': 1,
+                    'hour': 60,
+                    'day': 60 * 24,
+                    'week': 60 * 24 * 7
+                };
+
+                if (periods[timePeriod]) {
+                    periodResults += `${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(finalStats * periods[timePeriod] * timeAmount)}<br>`;
+                }
+
+                result.innerHTML = `Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br>Amount per Tick: ${formatNumber(statsPerTick)}<br>${timeRequired}<br>${periodResults}`;
+            } else {
+                result.textContent = 'Please enter all values.';
+            }
+        }
+
+        function getTicksPerMinute(statType) {
+            switch(statType) {
+                case 'Strength':
+                    return 60;
+                case 'Defense':
+                    return 32;
+                case 'Energy':
+                    return 27;
+                case 'Sword':
+                    return 52;
+                default:
+                    return 1;
+            }
+        }
+
+        function formatNumber(num) {
+            const scales = [
+                { value: 1E18, symbol: "QI" },
+                { value: 1E15, symbol: "Q" },
+                { value: 1E12, symbol: "T" },
+                { value: 1E9, symbol: "B" },
+                { value: 1E6, symbol: "M" },
+                { value: 1E3, symbol: "K" }
+            ];
+            for (let i = 0; i < scales.length; i++) {
+ if (num >= scales[i].value) {
+                    return (num / scales[i].value).toFixed(2) + scales[i].symbol;
+                }
+            }
+            return num.toFixed(2);
+        }
+
+        function parseInput(input) {
+            const scales = {
+                K: 1E3,
+                M: 1E6,
+                B: 1E9,
+                T: 1E12,
+                Q: 1E15,
+                QI: 1E18
+            };
+            const regex = /^(\d+(\.\d+)?)([KMBTQIQ]*)$/;
+            const match = input.toUpperCase().match(regex);
+            if (match) {
+                const value = parseFloat(match[1]);
+                const scale = scales[match[3]] || 1;
+                return value * scale;
+            }
+            return parseFloat(input) || 0;
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+    </script>
+</body>
+</html>
