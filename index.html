@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AS Stats Calculator</title>
+    <title>Stats Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -59,7 +59,7 @@
 </head>
 <body>
     <div class="calculator">
-        <h2>Stats Calculator By FellowAS</h2>
+        <h2>Stats Calculator</h2>
         <label for="trainingArea">Training Area</label>
         <select id="trainingArea">
             <option value="1">x1</option>
@@ -73,7 +73,7 @@
             <option value="5000">x5000</option>
         </select>
         <label for="statsMultiplier">Stats Multiplier</label>
-        <select id="statsMultiplier" multiple>
+        <select id="statsMultiplier">
             <option value="1">x1</option>
             <option value="2">x2</option>
             <option value="4">x4</option>
@@ -125,113 +125,116 @@
     </div>
 
     <script>
-        function calculateStats() {
-            const trainingArea = parseInput(document.getElementById('trainingArea').value);
-            const statsMultiplier = Array.from(document.getElementById('statsMultiplier').selectedOptions).map(option => parseInput(option.value)).reduce((a, b) => a * b, 1);
-            const statType = document.getElementById('statType').value;
-            const gamepass = document.getElementById('gamepass').checked;
-            const ugc = document.getElementById('ugc').checked;
-            const weekendBoost = document.getElementById('weekendBoost').checked;
-            const trainingBoost = document.getElementById('trainingBoost').checked;
-            const currentStats = parseInput(document.getElementById('currentStats').value);
-            const neededStats = parseInput(document.getElementById('neededStats').value);
-            const timePeriod = document.getElementById('timePeriod').value;
-            const timeAmount = parseInput(document.getElementById('timeAmount').value);
-            const result = document.getElementById('result');
+    function calculateStats() {
+        const trainingArea = parseInput(document.getElementById('trainingArea').value);
+        const statsMultiplier = parseInput(document.getElementById('statsMultiplier').value);
+        const statType = document.getElementById('statType').value;
+        const gamepass = document.getElementById('gamepass').checked;
+        const ugc = document.getElementById('ugc').checked;
+        const weekendBoost = document.getElementById('weekendBoost').checked;
+        const trainingBoost = document.getElementById('trainingBoost').checked;
+        const currentStats = parseInput(document.getElementById('currentStats').value);
+        const neededStats = parseInput(document.getElementById('neededStats').value);
+        const timePeriod = document.getElementById('timePeriod').value;
+        const timeAmount = parseInput(document.getElementById('timeAmount').value);
+        const result = document.getElementById('result');
 
-            if (trainingArea && statsMultiplier && timePeriod && timeAmount) {
-                let calculatedStats = trainingArea * statsMultiplier;
-                const ticksPerMinute = getTicksPerMinute(statType);
-                let statsPerTick = calculatedStats;
+        if (trainingArea && statsMultiplier && timePeriod && timeAmount) {
+            let calculatedStats = trainingArea * statsMultiplier;
+            const ticksPerMinute = getTicksPerMinute(statType);
+            let statsPerTick = calculatedStats;
 
-                if (gamepass) statsPerTick *= 1.5;
-                if (ugc) statsPerTick *= 1.1;
-                if (weekendBoost) statsPerTick *= 1.5;
-                if (trainingBoost) statsPerTick *= 1.5;
+            if (gamepass) statsPerTick *= 1.5;
+            if (ugc) statsPerTick *= 1.1;
+            if (weekendBoost) statsPerTick *= 1.5;
+            if (trainingBoost) statsPerTick *= 1.5;
 
-                const finalStats = statsPerTick * ticksPerMinute;
-                let timeRequired = '';
+            const finalStats = statsPerTick * ticksPerMinute;
+            let timeRequired = '';
 
-                if (currentStats && neededStats) {
-                    const statsDifference = neededStats - currentStats;
-                    let totalMinutes = statsDifference / finalStats;
-                    const minutes = Math.floor(totalMinutes);
-                    const seconds = Math.floor((totalMinutes - minutes) * 60);
-                    timeRequired = `Time Required: ${minutes} minutes and ${seconds} seconds`;
-                }
-
-                let periodResults = '';
-                const periods = {
-                    'minute': 1,
-                    'hour': 60,
-                    'day': 60 * 24,
-                    'week': 60 * 24 * 7
-                };
-
-                if (periods[timePeriod]) {
-                    periodResults += `${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(finalStats * periods[timePeriod] * timeAmount)}<br>`;
-                }
-
-                result.innerHTML = `Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br>Amount per Tick: ${formatNumber(statsPerTick)}<br>${timeRequired}<br>${periodResults}`;
-            } else {
-                result.textContent = 'Please enter all values.';
+            if (currentStats && neededStats) {
+                const statsDifference = neededStats - currentStats;
+                let totalMinutes = statsDifference / finalStats;
+                const days = Math.floor(totalMinutes / (60 * 24));
+                totalMinutes %= (60 * 24);
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = Math.floor(totalMinutes % 60);
+                timeRequired = `Time Required: ${days} days, ${hours} hours, and ${minutes} minutes`;
             }
-        }
 
-        function getTicksPerMinute(statType) {
-            switch(statType) {
-                case 'Strength':
-                    return 60;
-                case 'Defense':
-                    return 30;
-                case 'Energy':
-                    return 27;
-                case 'Sword':
-                    return 52;
-                default:
-                    return 1;
-            }
-        }
-
-        function formatNumber(num) {
-            const scales = [
-                { value: 1E18, symbol: "QI" },
-                { value: 1E15, symbol: "Q" },
-                { value: 1E12, symbol: "T" },
-                { value: 1E9, symbol: "B" },
-                { value: 1E6, symbol: "M" },
-                { value: 1E3, symbol: "K" }
-            ];
-            for (let i = 0; i < scales.length; i++) {
- if (num >= scales[i].value) {
-                    return (num / scales[i].value).toFixed(2) + scales[i].symbol;
-                }
-            }
-            return num.toFixed(2);
-        }
-
-        function parseInput(input) {
-            const scales = {
-                K: 1E3,
-                M: 1E6,
-                B: 1E9,
-                T: 1E12,
-                Q: 1E15,
-                QI: 1E18
+            let periodResults = '';
+            const periods = {
+                'minute': 1,
+                'hour': 60,
+                'day': 60 * 24,
+                'week': 60 * 24 * 7
             };
-            const regex = /^(\d+(\.\d+)?)([KMBTQIQ]*)$/;
-            const match = input.toUpperCase().match(regex);
-            if (match) {
-                const value = parseFloat(match[1]);
-                const scale = scales[match[3]] || 1;
-                return value * scale;
-            }
-            return parseFloat(input) || 0;
-        }
 
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
+            if (periods[timePeriod]) {
+                periodResults += `${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(finalStats * periods[timePeriod] * timeAmount)}<br>`;
+            }
+
+            result.innerHTML = `Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br>Amount per Tick: ${formatNumber(statsPerTick)}<br>${timeRequired}<br>${periodResults}`;
+        } else {
+            result.textContent = 'Please enter all values.';
         }
-    </script>
+    }
+
+    function getTicksPerMinute(statType) {
+        switch(statType) {
+            case 'Strength':
+                return 60;
+            case 'Defense':
+                return 32;
+            case 'Energy':
+                return 27;
+            case 'Sword':
+                return 52;
+            default:
+                return 1;
+        }
+    }
+
+    function formatNumber(num) {
+        const scales = [
+            { value: 1E18, symbol: "QI" },
+            { value: 1E15, symbol: "Q" },
+            { value: 1E12, symbol: "T" },
+            { value: 1E9, symbol: "B" },
+            { value: 1E6, symbol: "M" },
+            { value: 1E3, symbol: "K" }
+        ];
+        for (let i = 0; i < scales.length; i++) {
+            if (num >= scales[i].value) {
+                return (num / scales[i].value).toFixed(2) + scales[i].symbol;
+            }
+        }
+        return num.toFixed(2);
+    }
+
+    function parseInput(input) {
+        const scales = {
+            K: 1E3,
+            M: 1E6,
+            B: 1E9,
+            T: 1E12,
+            Q: 1E15,
+            QI: 1E18
+        };
+        const regex = /^(\d+(\.\d+)?)([KMBTQIQ]*)$/;
+        const match = input.toUpperCase().match(regex);
+        if (match) {
+            const value = parseFloat(match[1]);
+            const scale = scales[match[3]] || 1;
+            return value * scale;
+        }
+        return parseFloat(input) || 0;
+    }
+
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+</script>
+
 </body>
 </html>
