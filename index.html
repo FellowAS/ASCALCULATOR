@@ -198,7 +198,7 @@
     function formatNumber(num) {
         const scales = [
             { value: 1E18, symbol: "QI" },
-            { value: 1E15, symbol: "Qd" },
+            { value: 1E15, symbol: "QD" },
             { value: 1E12, symbol: "T" },
             { value: 1E9, symbol: "B" },
             { value: 1E6, symbol: "M" },
@@ -218,10 +218,10 @@
             M: 1E6,
             B: 1E9,
             T: 1E12,
-            Qd: 1E15,
+            QD: 1E15,
             QI: 1E18
         };
-        const regex = /^(\d+(\.\d+)?)([KMBTDQIQ]*)$/;
+        const regex = /^(\d+(\.\d+)?)([KMBTQDQI]*)$/;
         const match = input.toUpperCase().match(regex);
         if (match) {
             const value = parseFloat(match[1]);
