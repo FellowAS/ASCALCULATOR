@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stats and Coins Calculator AS </title>
+    <title>Stats and Coins Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #333;
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            transition: background-color 0.3s, color 0.3s;
         }
         .container {
             display: flex;
             gap: 20px;
         }
         .calculator {
-            background: #fff;
+            background: #444;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
+            transition: background-color 0.3s, color 0.3s;
         }
         .calculator h2 {
             margin-bottom: 20px;
@@ -39,6 +42,8 @@
             margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            background-color: #555;
+            color: #fff;
         }
         .calculator input[type="checkbox"] {
             margin-right: 10px;
@@ -126,7 +131,7 @@
             </select>
             <label for="timeAmount">Enter Time Amount</label>
             <input type="text" id="timeAmount" placeholder="Enter amount (e.g., 1)">
-            <button onclick="calculateStats()">Calculate</button>
+            <button type="button" onclick="calculateStats()">Calculate</button>
             <div class="result" id="result"></div>
         </div>
 
@@ -155,7 +160,7 @@
             </select>
             <label for="coinTimeAmount">Enter Time Amount</label>
             <input type="text" id="coinTimeAmount" placeholder="Enter amount (e.g., 1)">
-            <button onclick="calculateCoins()">Calculate</button>
+            <button type="button" onclick="calculateCoins()">Calculate</button>
             <div class="result" id="coinResult"></div>
         </div>
     </div>
@@ -182,7 +187,7 @@
 
                 if (gamepass) statsPerTick *= 1.5;
                 if (ugc) statsPerTick *= 1.1;
-                if (weekendBoost) statsPerTick *= 1.5;
+if (weekendBoost) statsPerTick *= 1.5;
                 if (trainingBoost) statsPerTick *= 1.5;
 
                 const finalStats = statsPerTick * ticksPerMinute;
@@ -197,6 +202,7 @@
                     const minutes = Math.floor(totalMinutes % 60);
                     timeRequired = `Time Required: ${days} days, ${hours} hours, and ${minutes} minutes`;
                 }
+
                 let periodResults = '';
                 const periods = {
                     'minute': 1,
