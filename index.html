@@ -228,69 +228,78 @@
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    function calculateStats() {
-        const trainingArea = parseInput(document.getElementById('trainingArea').value);
-        const statsMultiplier = parseInput(document.getElementById('statsMultiplier').value);
-        const statType = document.getElementById('statType').value;
-        const gamepass = document.getElementById('gamepass').checked;
-        const ugc = document.getElementById('ugc').checked;
-        const weekendBoost = document.getElementById('weekendBoost').checked;
-        const trainingBoost = document.getElementById('trainingBoost').checked;
-        const currentStats = parseInput(document.getElementById('currentStats').value);
-        const neededStats = parseInput(document.getElementById('neededStats').value);
-        const timePeriod = document.getElementById('timePeriod').value;
-        const timeAmount = parseInput(document.getElementById('timeAmount').value);
-        const championPercent = parseInput(document.getElementById('championPercent').value) / 100;
-        const result = document.getElementById('result');
+  function calculateStats() {
+    const trainingArea = parseInput(document.getElementById('trainingArea')?.value);
+    const statsMultiplier = parseInput(document.getElementById('statsMultiplier')?.value);
+    const statType = document.getElementById('statType')?.value;
+    const gamepass = document.getElementById('gamepass')?.checked;
+    const ugc = document.getElementById('ugc')?.checked;
+    const weekendBoost = document.getElementById('weekendBoost')?.checked;
+    const trainingBoost = document.getElementById('trainingBoost')?.checked;
+    const currentStats = parseInput(document.getElementById('currentStats')?.value);
+    const neededStats = parseInput(document.getElementById('neededStats')?.value);
+    const timePeriod = document.getElementById('timePeriod')?.value;
+    const timeAmount = parseInput(document.getElementById('timeAmount')?.value);
+    const championPercent = parseInput(document.getElementById('championPercent')?.value) / 100;
+    const result = document.getElementById('result');
 
-        if (trainingArea && statsMultiplier && timePeriod) {
-            let calculatedStats = trainingArea * statsMultiplier;
-            const ticksPerMinute = getTicksPerMinute(statType);
-            let statsPerTick = calculatedStats;
+    if (trainingArea !== null && statsMultiplier !== null && timePeriod !== null) {
+        let calculatedStats = trainingArea * statsMultiplier;
+        const ticksPerMinute = getTicksPerMinute(statType);
+        let statsPerTick = calculatedStats;
 
-            if (gamepass) statsPerTick *= 1.5;
-            if (ugc) statsPerTick *= 1.1;
-            if (weekendBoost) statsPerTick *= 1.5;
-            if (trainingBoost) statsPerTick *= 1.5;
+        if (gamepass) statsPerTick *= 1.5;
+        if (ugc) statsPerTick *= 1.1;
+        if (weekendBoost) statsPerTick *= 1.5;
+        if (trainingBoost) statsPerTick *= 1.5;
 
-            const championStatsPerTick = calculatedStats * (gamepass ? 1.5 : 1) * (ugc ? 1.1 : 1) * championPercent;
-            const finalStats = statsPerTick * ticksPerMinute;
-            const finalChampionStats = championPercent > 0 ? championStatsPerTick * 10 : 0; // 10 ticks per minute for Champion %
+        const championStatsPerTick = calculatedStats * (gamepass ? 1.5 : 1) * (ugc ? 1.1 : 1) * championPercent;
+        const finalStats = statsPerTick * ticksPerMinute;
+        const finalChampionStats = championPercent > 0 ? championStatsPerTick * 10 : 0; // 10 ticks per minute for Champion %
 
-            const totalStats = finalStats + finalChampionStats;
+        const totalStats = finalStats + finalChampionStats;
 
-            let timeRequired = '';
+        let timeRequired = '';
 
-            if (neededStats > 0) {
-                const statsDifference = neededStats - currentStats;
+        if (neededStats > 0) {
+            const statsDifference = neededStats - currentStats;
+            if (totalStats > 0) {
                 let totalMinutes = statsDifference / totalStats;
                 const days = Math.floor(totalMinutes / (60 * 24));
                 totalMinutes %= (60 * 24);
                 const hours = Math.floor(totalMinutes / 60);
                 const minutes = Math.floor(totalMinutes % 60);
                 timeRequired = `Time Required: ${days} days, ${hours} hours, and ${minutes} minutes`;
+            } else {
+                timeRequired = 'Total stats per minute is zero, cannot calculate time required.';
             }
-
-            let periodResults = '';
-            const periods = {
-                'minute': 1,
-                'hour': 60,
-                'day': 60 * 24,
-                'week': 60 * 24 * 7
-            };
-
-            if (timeAmount && periods[timePeriod]) {
-                periodResults += `${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(finalStats * periods[timePeriod] * timeAmount)}<br>`;
-                if (championPercent > 0) {
-                    periodResults += `Champion ${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(finalChampionStats * periods[timePeriod] * timeAmount)}<br>`;
-                }
-            }
-
-            result.innerHTML = `Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br>Amount per Tick: ${formatNumber(statsPerTick)}<br>Champion Stats: ${formatNumber(finalChampionStats)} (per minute)<br>${timeRequired}<br>${periodResults}<br>TOTAL: ${formatNumber(totalStats)} (per minute)`;
-        } else {
-            result.textContent = 'Please enter all values.';
         }
+
+        let periodResults = '';
+        const periods = {
+            'minute': 1,
+            'hour': 60,
+            'day': 60 * 24,
+            'week': 60 * 24 * 7
+        };
+
+        if (timeAmount && periods[timePeriod]) {
+            const statsInTimePeriod = finalStats * periods[timePeriod] * timeAmount;
+            const championStatsInTimePeriod = finalChampionStats * periods[timePeriod] * timeAmount;
+            const totalStatsInTimePeriod = statsInTimePeriod + championStatsInTimePeriod;
+
+            periodResults += `${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(statsInTimePeriod)}<br>`;
+            if (championPercent > 0) {
+                periodResults += `Champion ${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(championStatsInTimePeriod)}<br>`;
+            }
+            periodResults += `TOTAL in ${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(totalStatsInTimePeriod)}<br>`;
+        }
+
+        result.innerHTML = `Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br>Amount per Tick: ${formatNumber(statsPerTick)}<br>Champion Stats: ${formatNumber(finalChampionStats)} (per minute)<br>${timeRequired}<br>${periodResults}<br>TOTAL: ${formatNumber(totalStats)} (per minute)`;
+    } else {
+        result.textContent = 'Please enter all values.';
     }
+}
 
     function calculateCoins() {
         const rank = parseInput(document.getElementById('rank').value);
