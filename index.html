@@ -22,24 +22,24 @@
         }
         .calculator {
             background: #444;
-            padding: 20px;
+            padding: 15px; /* Reduced padding */
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            width: 400px; /* Increased width */
             transition: background-color 0.3s, color 0.3s;
         }
         .calculator h2 {
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Reduced margin */
         }
         .calculator label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px; /* Reduced margin */
             font-weight: bold;
         }
         .calculator input[type="text"], .calculator select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
+            padding: 8px; /* Reduced padding */
+            margin-bottom: 15px; /* Reduced margin */
             border: 1px solid #ccc;
             border-radius: 4px;
             background-color: #555;
@@ -61,7 +61,7 @@
             background: #0056b3;
         }
         .result {
-            margin-top: 20px;
+            margin-top: 15px; /* Reduced margin */
             font-size: 1.2em;
             font-weight: bold;
         }
@@ -131,6 +131,8 @@
             </select>
             <label for="timeAmount">Enter Time Amount (optional)</label>
             <input type="text" id="timeAmount" placeholder="Enter amount (e.g., 1)">
+            <label for="championPercent">Champion %</label>
+            <input type="text" id="championPercent" placeholder="Enter Champion %">
             <button type="button" onclick="calculateStats()">Calculate</button>
             <div class="result" id="result"></div>
         </div>
@@ -203,7 +205,6 @@
         }
         return num.toFixed(2);
     }
-
     function parseInput(input) {
         const scales = {
             K: 1E3,
@@ -239,6 +240,7 @@
         const neededStats = parseInput(document.getElementById('neededStats').value);
         const timePeriod = document.getElementById('timePeriod').value;
         const timeAmount = parseInput(document.getElementById('timeAmount').value);
+        const championPercent = parseInput(document.getElementById('championPercent').value) / 100;
         const result = document.getElementById('result');
 
         if (trainingArea && statsMultiplier && timePeriod) {
@@ -250,12 +252,18 @@
             if (ugc) statsPerTick *= 1.1;
             if (weekendBoost) statsPerTick *= 1.5;
             if (trainingBoost) statsPerTick *= 1.5;
+
+            const championStatsPerTick = calculatedStats * (gamepass ? 1.5 : 1) * (ugc ? 1.1 : 1) * championPercent;
             const finalStats = statsPerTick * ticksPerMinute;
+            const finalChampionStats = championPercent > 0 ? championStatsPerTick * 10 : 0; // 10 ticks per minute for Champion %
+
+            const totalStats = finalStats + finalChampionStats;
+
             let timeRequired = '';
 
             if (neededStats > 0) {
                 const statsDifference = neededStats - currentStats;
-                let totalMinutes = statsDifference / finalStats;
+                let totalMinutes = statsDifference / totalStats;
                 const days = Math.floor(totalMinutes / (60 * 24));
                 totalMinutes %= (60 * 24);
                 const hours = Math.floor(totalMinutes / 60);
@@ -273,9 +281,12 @@
 
             if (timeAmount && periods[timePeriod]) {
                 periodResults += `${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(finalStats * periods[timePeriod] * timeAmount)}<br>`;
+                if (championPercent > 0) {
+                    periodResults += `Champion ${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(finalChampionStats * periods[timePeriod] * timeAmount)}<br>`;
+                }
             }
 
-            result.innerHTML = `Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br>Amount per Tick: ${formatNumber(statsPerTick)}<br>${timeRequired}<br>${periodResults}`;
+            result.innerHTML = `Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br>Amount per Tick: ${formatNumber(statsPerTick)}<br>Champion Stats: ${formatNumber(finalChampionStats)} (per minute)<br>${timeRequired}<br>${periodResults}<br>TOTAL: ${formatNumber(totalStats)} (per minute)`;
         } else {
             result.textContent = 'Please enter all values.';
         }
@@ -326,11 +337,11 @@
                 coinsInTimePeriod = `Coins in ${coinTimeAmount} ${coinTimePeriod}(s): ${formatNumber(coinsPerMinute * periods[coinTimePeriod] * coinTimeAmount)}`;
             }
 
-            coinResult.innerHTML = `Calculated Coins Needed: ${formatNumber(totalCoins)}<br>${timeRequired}<br>${coinsInTimePeriod}`;
+            coinResult.innerHTML = `${neededCoins > 0 ? `Calculated Coins Needed: ${formatNumber(totalCoins)}<br>${timeRequired}<br>` : ''}${coinsInTimePeriod}`;
         } else {
             coinResult.textContent = 'Please enter all values.';
         }
     }
-</script>
+    </script>
 </body>
 </html>
