@@ -14,7 +14,6 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            transition: background-color 0.3s, color 0.3s;
         }
         .container {
             display: flex;
@@ -22,24 +21,23 @@
         }
         .calculator {
             background: #444;
-            padding: 15px; /* Reduced padding */
+            padding: 15px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px; /* Increased width */
-            transition: background-color 0.3s, color 0.3s;
+            width: 400px;
         }
         .calculator h2 {
-            margin-bottom: 15px; /* Reduced margin */
+            margin-bottom: 15px;
         }
         .calculator label {
             display: block;
-            margin-bottom: 8px; /* Reduced margin */
+            margin-bottom: 8px;
             font-weight: bold;
         }
         .calculator input[type="text"], .calculator select {
             width: 100%;
-            padding: 8px; /* Reduced padding */
-            margin-bottom: 15px; /* Reduced margin */
+            padding: 8px;
+            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
             background-color: #555;
@@ -61,7 +59,7 @@
             background: #0056b3;
         }
         .result {
-            margin-top: 15px; /* Reduced margin */
+            margin-top: 15px;
             font-size: 1.2em;
             font-weight: bold;
         }
@@ -171,7 +169,22 @@
     </div>
     <script>
     function parseInput(value) {
-        return isNaN(parseFloat(value)) ? 0 : parseFloat(value);
+        const regex = /^(\d+(\.\d+)?)([KMBTQDQI]*)$/;
+        const match = value.toUpperCase().match(regex);
+        const scales = {
+            K: 1E3,
+            M: 1E6,
+            B: 1E9,
+            T: 1E12,
+            QD: 1E15,
+            QI: 1E18
+        };
+        if (match) {
+            const value = parseFloat(match[1]);
+            const scale = scales[match[3]] || 1;
+            return value * scale;
+        }
+        return parseFloat(value) || 0;
     }
 
     function getTicksPerMinute(statType) {
@@ -196,7 +209,7 @@
             { value: 1E12, symbol: "T" },
             { value: 1E9, symbol: "B" },
             { value: 1E6, symbol: "M" },
-            { value: 1E3, symbol: "K" }
+ { value: 1E3, symbol: "K" }
         ];
         for (let i = 0; i < scales.length; i++) {
             if (num >= scales[i].value) {
@@ -205,30 +218,8 @@
         }
         return num.toFixed(2);
     }
-    function parseInput(input) {
-        const scales = {
-            K: 1E3,
-            M: 1E6,
-            B: 1E9,
-            T: 1E12,
-            QD: 1E15,
-            QI: 1E18
-        };
-        const regex = /^(\d+(\.\d+)?)([KMBTQDQI]*)$/;
-        const match = input.toUpperCase().match(regex);
-        if (match) {
-            const value = parseFloat(match[1]);
-            const scale = scales[match[3]] || 1;
-            return value * scale;
-        }
-        return parseFloat(input) || 0;
-    }
 
-    function capitalize(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-  function calculateStats() {
+function calculateStats() {
     const trainingArea = parseInput(document.getElementById('trainingArea')?.value);
     const statsMultiplier = parseInput(document.getElementById('statsMultiplier')?.value);
     const statType = document.getElementById('statType')?.value;
@@ -242,6 +233,19 @@
     const timeAmount = parseInput(document.getElementById('timeAmount')?.value);
     const championPercent = parseInput(document.getElementById('championPercent')?.value) / 100;
     const result = document.getElementById('result');
+
+    console.log('Training Area:', trainingArea);
+    console.log('Stats Multiplier:', statsMultiplier);
+    console.log('Stat Type:', statType);
+    console.log('Gamepass:', gamepass);
+    console.log('UGC:', ugc);
+    console.log('Weekend Boost:', weekendBoost);
+    console.log('Training Boost:', trainingBoost);
+    console.log('Current Stats:', currentStats);
+    console.log('Needed Stats:', neededStats);
+    console.log('Time Period:', timePeriod);
+    console.log('Time Amount:', timeAmount);
+    console.log('Champion Percent:', championPercent);
 
     if (trainingArea !== null && statsMultiplier !== null && timePeriod !== null) {
         let calculatedStats = trainingArea * statsMultiplier;
@@ -260,7 +264,6 @@
         const totalStats = finalStats + finalChampionStats;
 
         let timeRequired = '';
-
         if (neededStats > 0) {
             const statsDifference = neededStats - currentStats;
             if (totalStats > 0) {
@@ -288,14 +291,10 @@
             const championStatsInTimePeriod = finalChampionStats * periods[timePeriod] * timeAmount;
             const totalStatsInTimePeriod = statsInTimePeriod + championStatsInTimePeriod;
 
-            periodResults += `${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(statsInTimePeriod)}<br>`;
-            if (championPercent > 0) {
-                periodResults += `Champion ${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(championStatsInTimePeriod)}<br>`;
-            }
-            periodResults += `TOTAL in ${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(totalStatsInTimePeriod)}<br>`;
+            periodResults += `TOTAL in ${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(totalStatsInTimePeriod)}<br />`;
         }
 
-        result.innerHTML = `Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br>Amount per Tick: ${formatNumber(statsPerTick)}<br>Champion Stats: ${formatNumber(finalChampionStats)} (per minute)<br>${timeRequired}<br>${periodResults}<br>TOTAL: ${formatNumber(totalStats)} (per minute)`;
+        result.innerHTML = `Amount per Tick: ${formatNumber(statsPerTick)}<br /><br />Champion Stats: ${formatNumber(finalChampionStats)} (per minute)<br /><br />Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br /><br />${timeRequired}<br /><br />${periodResults}<br />TOTAL: ${formatNumber(totalStats)} (per minute)`;
     } else {
         result.textContent = 'Please enter all values.';
     }
@@ -350,6 +349,10 @@
         } else {
             coinResult.textContent = 'Please enter all values.';
         }
+    }
+
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
     </script>
 </body>
