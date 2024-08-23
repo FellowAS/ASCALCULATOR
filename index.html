@@ -167,173 +167,170 @@
             <div class="result" id="coinResult"></div>
         </div>
     </div>
-
     <script>
-        function calculateStats() {
-            const trainingArea = parseInput(document.getElementById('trainingArea').value);
-            const statsMultiplier = parseInput(document.getElementById('statsMultiplier').value);
-            const statType = document.getElementById('statType').value;
-            const gamepass = document.getElementById('gamepass').checked;
-            const ugc = document.getElementById('ugc').checked;
-            const weekendBoost = document.getElementById('weekendBoost').checked;
-            const trainingBoost = document.getElementById('trainingBoost').checked;
-            const currentStats = parseInput(document.getElementById('currentStats').value);
-            const neededStats = parseInput(document.getElementById('neededStats').value);
-            const timePeriod = document.getElementById('timePeriod').value;
-            const timeAmount = parseInput(document.getElementById('timeAmount').value);
-            const result = document.getElementById('result');
+    function parseInput(value) {
+        return isNaN(parseFloat(value)) ? 0 : parseFloat(value);
+    }
 
-            if (trainingArea && statsMultiplier && timePeriod) {
-                let calculatedStats = trainingArea * statsMultiplier;
-                const ticksPerMinute = getTicksPerMinute(statType);
-                let statsPerTick = calculatedStats;
+    function getTicksPerMinute(statType) {
+        switch(statType) {
+            case 'Strength':
+                return 60;
+            case 'Defense':
+                return 32;
+            case 'Energy':
+                return 27;
+            case 'Sword':
+                return 52;
+            default:
+                return 1;
+        }
+    }
 
-                if (gamepass) statsPerTick *= 1.5;
-                if (ugc) statsPerTick *= 1.1;
-                if (weekendBoost) statsPerTick *= 1.5;
-                if (trainingBoost) statsPerTick *= 1.5;
-               const finalStats = statsPerTick * ticksPerMinute;
-                let timeRequired = '';
-
-                if (currentStats && neededStats) {
-                    const statsDifference = neededStats - currentStats;
-                    let totalMinutes = statsDifference / finalStats;
-                    const days = Math.floor(totalMinutes / (60 * 24));
-                    totalMinutes %= (60 * 24);
-                    const hours = Math.floor(totalMinutes / 60);
-                    const minutes = Math.floor(totalMinutes % 60);
-                    timeRequired = `Time Required: ${days} days, ${hours} hours, and ${minutes} minutes`;
-                }
-
-                let periodResults = '';
-                const periods = {
-                    'minute': 1,
-                    'hour': 60,
-                    'day': 60 * 24,
-                    'week': 60 * 24 * 7
-                };
-
-                if (timeAmount && periods[timePeriod]) {
-                    periodResults += `${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(finalStats * periods[timePeriod] * timeAmount)}<br>`;
-                }
-
-                result.innerHTML = `Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br>Amount per Tick: ${formatNumber(statsPerTick)}<br>${timeRequired}<br>${periodResults}`;
-            } else {
-                result.textContent = 'Please enter all values.';
+    function formatNumber(num) {
+        const scales = [
+            { value: 1E18, symbol: "QI" },
+            { value: 1E15, symbol: "QD" },
+            { value: 1E12, symbol: "T" },
+            { value: 1E9, symbol: "B" },
+            { value: 1E6, symbol: "M" },
+            { value: 1E3, symbol: "K" }
+        ];
+        for (let i = 0; i < scales.length; i++) {
+            if (num >= scales[i].value) {
+                return (num / scales[i].value).toFixed(2) + scales[i].symbol;
             }
         }
+        return num.toFixed(2);
+    }
 
-        function calculateCoins() {
-    const rank = document.getElementById('rank').value;
-    const coinTimePeriod = document.getElementById('coinTimePeriod').value;
-    const coinTimeAmount = parseInput(document.getElementById('coinTimeAmount').value);
-    const coinsGamepass = document.getElementById('coinsGamepass').checked;
-    const currentCoins = parseInput(document.getElementById('currentCoins').value);
-    const neededCoins = parseInput(document.getElementById('neededCoins').value);
-    const coinResult = document.getElementById('coinResult');
-
-    if (coinTimePeriod) {
-        let coinsPerMinute = rank;
-        if (coinsGamepass) {
-            coinsPerMinute *= 2;
-        }
-
-        const periods = {
-            'minute': 1,
-            'hour': 60,
-            'day': 60 * 24,
-            'week': 60 * 24 * 7
+    function parseInput(input) {
+        const scales = {
+            K: 1E3,
+            M: 1E6,
+            B: 1E9,
+            T: 1E12,
+            QD: 1E15,
+            QI: 1E18
         };
+        const regex = /^(\d+(\.\d+)?)([KMBTQDQI]*)$/;
+        const match = input.toUpperCase().match(regex);
+        if (match) {
+            const value = parseFloat(match[1]);
+            const scale = scales[match[3]] || 1;
+            return value * scale;
+        }
+        return parseFloat(input) || 0;
+    }
 
-        let totalCoins = coinsPerMinute * periods[coinTimePeriod] * (coinTimeAmount || 1);
-        let timeRequired = '';
-        let coinsInTimePeriod = '';
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
 
-        if (neededCoins > 0) {
-            const coinsDifference = neededCoins - currentCoins;
-            if (coinsDifference > 0) {
-                let totalMinutes = coinsDifference / coinsPerMinute;
+    function calculateStats() {
+        const trainingArea = parseInput(document.getElementById('trainingArea').value);
+        const statsMultiplier = parseInput(document.getElementById('statsMultiplier').value);
+        const statType = document.getElementById('statType').value;
+        const gamepass = document.getElementById('gamepass').checked;
+        const ugc = document.getElementById('ugc').checked;
+        const weekendBoost = document.getElementById('weekendBoost').checked;
+        const trainingBoost = document.getElementById('trainingBoost').checked;
+        const currentStats = parseInput(document.getElementById('currentStats').value);
+        const neededStats = parseInput(document.getElementById('neededStats').value);
+        const timePeriod = document.getElementById('timePeriod').value;
+        const timeAmount = parseInput(document.getElementById('timeAmount').value);
+        const result = document.getElementById('result');
+
+        if (trainingArea && statsMultiplier && timePeriod) {
+            let calculatedStats = trainingArea * statsMultiplier;
+            const ticksPerMinute = getTicksPerMinute(statType);
+            let statsPerTick = calculatedStats;
+
+            if (gamepass) statsPerTick *= 1.5;
+            if (ugc) statsPerTick *= 1.1;
+            if (weekendBoost) statsPerTick *= 1.5;
+            if (trainingBoost) statsPerTick *= 1.5;
+            const finalStats = statsPerTick * ticksPerMinute;
+            let timeRequired = '';
+
+            if (neededStats > 0) {
+                const statsDifference = neededStats - currentStats;
+                let totalMinutes = statsDifference / finalStats;
                 const days = Math.floor(totalMinutes / (60 * 24));
                 totalMinutes %= (60 * 24);
                 const hours = Math.floor(totalMinutes / 60);
                 const minutes = Math.floor(totalMinutes % 60);
                 timeRequired = `Time Required: ${days} days, ${hours} hours, and ${minutes} minutes`;
-            } else {
-                timeRequired = 'You already have enough coins.';
             }
-            totalCoins = coinsDifference;
-        }
 
-        if (coinTimeAmount) {
-            coinsInTimePeriod = `Coins in ${coinTimeAmount} ${coinTimePeriod}(s): ${formatNumber(coinsPerMinute * periods[coinTimePeriod] * coinTimeAmount)}`;
-        }
-
-        coinResult.innerHTML = `Calculated Coins Needed: ${formatNumber(totalCoins)}<br>${timeRequired}<br>${coinsInTimePeriod}`;
-    } else {
-        coinResult.textContent = 'Please enter all values.';
-    }
-}
-
-
-
-
-
-
-
-        function getTicksPerMinute(statType) {
-            switch(statType) {
-                case 'Strength':
-                    return 60;
-                case 'Defense':
-                    return 32;
-                case 'Energy':
-                    return 27;
-                case 'Sword':
-                    return 52;
-                default:
-                    return 1;
-            }
-        }
-
-        function formatNumber(num) {
-            const scales = [
-                { value: 1E18, symbol: "QI" },
-                { value: 1E15, symbol: "QD" },
-                { value: 1E12, symbol: "T" },
-                { value: 1E9, symbol: "B" },
-                { value: 1E6, symbol: "M" },
-                { value: 1E3, symbol: "K" }
-            ];
-            for (let i = 0; i < scales.length; i++) {
-                if (num >= scales[i].value) {
-                    return (num / scales[i].value).toFixed(2) + scales[i].symbol;
-                }
-            }
-            return num.toFixed(2);
-        }
-
-        function parseInput(input) {
-            const scales = {
-                K: 1E3,
-                M: 1E6,
-                B: 1E9,
-                T: 1E12,
-                QD: 1E15,
-                QI: 1E18
+            let periodResults = '';
+            const periods = {
+                'minute': 1,
+                'hour': 60,
+                'day': 60 * 24,
+                'week': 60 * 24 * 7
             };
-            const regex = /^(\d+(\.\d+)?)([KMBTQDQI]*)$/;
-            const match = input.toUpperCase().match(regex);
-            if (match) {
-                const value = parseFloat(match[1]);
-                const scale = scales[match[3]] || 1;
-                return value * scale;
-            }
-            return parseFloat(input) || 0;
-        }
 
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
+            if (timeAmount && periods[timePeriod]) {
+                periodResults += `${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(finalStats * periods[timePeriod] * timeAmount)}<br>`;
+            }
+
+            result.innerHTML = `Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br>Amount per Tick: ${formatNumber(statsPerTick)}<br>${timeRequired}<br>${periodResults}`;
+        } else {
+            result.textContent = 'Please enter all values.';
         }
-    </script>
+    }
+
+    function calculateCoins() {
+        const rank = parseInput(document.getElementById('rank').value);
+        const coinTimePeriod = document.getElementById('coinTimePeriod').value;
+        const coinTimeAmount = parseInput(document.getElementById('coinTimeAmount').value);
+        const coinsGamepass = document.getElementById('coinsGamepass').checked;
+        const currentCoins = parseInput(document.getElementById('currentCoins').value);
+        const neededCoins = parseInput(document.getElementById('neededCoins').value);
+        const coinResult = document.getElementById('coinResult');
+
+        if (coinTimePeriod) {
+            let coinsPerMinute = rank;
+            if (coinsGamepass) {
+                coinsPerMinute *= 2;
+            }
+
+            const periods = {
+                'minute': 1,
+                'hour': 60,
+                'day': 60 * 24,
+                'week': 60 * 24 * 7
+            };
+
+            let totalCoins = coinsPerMinute * periods[coinTimePeriod] * (coinTimeAmount || 1);
+            let timeRequired = '';
+            let coinsInTimePeriod = '';
+
+            if (neededCoins > 0) {
+                const coinsDifference = neededCoins - currentCoins;
+                if (coinsDifference > 0) {
+                    let totalMinutes = coinsDifference / coinsPerMinute;
+                    const days = Math.floor(totalMinutes / (60 * 24));
+                    totalMinutes %= (60 * 24);
+                    const hours = Math.floor(totalMinutes / 60);
+                    const minutes = Math.floor(totalMinutes % 60);
+                    timeRequired = `Time Required: ${days} days, ${hours} hours, and ${minutes} minutes`;
+                } else {
+                    timeRequired = 'You already have enough coins.';
+                }
+                totalCoins = coinsDifference;
+            }
+
+            if (coinTimeAmount) {
+                coinsInTimePeriod = `Coins in ${coinTimeAmount} ${coinTimePeriod}(s): ${formatNumber(coinsPerMinute * periods[coinTimePeriod] * coinTimeAmount)}`;
+            }
+
+            coinResult.innerHTML = `Calculated Coins Needed: ${formatNumber(totalCoins)}<br>${timeRequired}<br>${coinsInTimePeriod}`;
+        } else {
+            coinResult.textContent = 'Please enter all values.';
+        }
+    }
+</script>
 </body>
 </html>
