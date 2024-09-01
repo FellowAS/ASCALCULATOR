@@ -105,6 +105,10 @@
                 <option value="262144">x262.14k</option>
                 <option value="524288">x524.28k</option>
                 <option value="1048576">x1.048M</option>
+                <option value="2097152">x2.09M</option>
+                <option value="4194304">x4.19M</option>
+                <option value="8388608">x8.38M</option>
+                <option value="16777216">x16.7M</option>
             </select>
             <label for="statType">Stat Type</label>
             <select id="statType">
@@ -115,7 +119,6 @@
             </select>
             <label><input type="checkbox" id="gamepass"> x1.5 Gamepass</label>
             <label><input type="checkbox" id="ugc"> UGC</label>
-            <label><input type="checkbox" id="weekendBoost"> Weekend Boost not working properly</label>
             <label><input type="checkbox" id="trainingBoost"> Training Boost not working properly</label>
             <label for="currentStats">Current Stats</label>
             <input type="text" id="currentStats" placeholder="Enter current stats">
@@ -147,10 +150,14 @@
                 <option value="250">Reaper</option>
                 <option value="500">Warrior</option>
                 <option value="1000">Sin</option>
-                <option value="2500">Mage</option>
-                <option value="5000">Demon</option>
+                <option value="5000">Mage</option>
+                <option value="10000">Demon</option>
+                <option value="50000">Emperor</option>
+                <option value="100000">Elder</option>
             </select>
             <label><input type="checkbox" id="coinsGamepass"> x2 Coins Gamepass</label>
+	    <label><input type="checkbox" id="golden"> Golden</label>
+
             <label for="currentCoins">Current Coins</label>
             <input type="text" id="currentCoins" placeholder="Enter current coins">
             <label for="neededCoins">Needed Coins</label>
@@ -226,7 +233,6 @@ function calculateStats() {
     const statType = document.getElementById('statType')?.value;
     const gamepass = document.getElementById('gamepass')?.checked;
     const ugc = document.getElementById('ugc')?.checked;
-    const weekendBoost = document.getElementById('weekendBoost')?.checked;
     const trainingBoost = document.getElementById('trainingBoost')?.checked;
     const currentStats = parseInput(document.getElementById('currentStats')?.value);
     const neededStats = parseInput(document.getElementById('neededStats')?.value);
@@ -240,7 +246,6 @@ function calculateStats() {
     console.log('Stat Type:', statType);
     console.log('Gamepass:', gamepass);
     console.log('UGC:', ugc);
-    console.log('Weekend Boost:', weekendBoost);
     console.log('Training Boost:', trainingBoost);
     console.log('Current Stats:', currentStats);
     console.log('Needed Stats:', neededStats);
@@ -255,7 +260,6 @@ function calculateStats() {
 
         if (gamepass) statsPerTick *= 1.5;
         if (ugc) statsPerTick *= 1.1;
-        if (weekendBoost) statsPerTick *= 1.5;
         if (trainingBoost) statsPerTick *= 1.5;
 
         const championStatsPerTick = calculatedStats * (gamepass ? 1.5 : 1) * (ugc ? 1.1 : 1) * championPercent;
@@ -301,20 +305,24 @@ function calculateStats() {
     }
 }
 
-    function calculateCoins() {
-        const rank = parseInput(document.getElementById('rank').value);
-        const coinTimePeriod = document.getElementById('coinTimePeriod').value;
-        const coinTimeAmount = parseInput(document.getElementById('coinTimeAmount').value);
-        const coinsGamepass = document.getElementById('coinsGamepass').checked;
-        const currentCoins = parseInput(document.getElementById('currentCoins').value);
-        const neededCoins = parseInput(document.getElementById('neededCoins').value);
-        const coinResult = document.getElementById('coinResult');
+function calculateCoins() {
+    const rank = parseInput(document.getElementById('rank').value);
+    const coinTimePeriod = document.getElementById('coinTimePeriod').value;
+    const coinTimeAmount = parseInput(document.getElementById('coinTimeAmount').value);
+    const coinsGamepass = document.getElementById('coinsGamepass').checked;
+    const golden = document.getElementById('golden').checked; // New checkbox for Golden
+    const currentCoins = parseInput(document.getElementById('currentCoins').value);
+    const neededCoins = parseInput(document.getElementById('neededCoins').value);
+    const coinResult = document.getElementById('coinResult');
 
-        if (coinTimePeriod) {
-            let coinsPerMinute = rank;
-            if (coinsGamepass) {
-                coinsPerMinute *= 2;
-            }
+    if (coinTimePeriod) {
+        let coinsPerMinute = rank;
+        if (coinsGamepass) {
+            coinsPerMinute *= 2;
+        }
+        if (golden) {
+            coinsPerMinute *= 1.2; // Add 20% for Golden
+        }
 
             const periods = {
                 'minute': 1,
@@ -346,11 +354,11 @@ function calculateStats() {
                 coinsInTimePeriod = `Coins in ${coinTimeAmount} ${coinTimePeriod}(s): ${formatNumber(coinsPerMinute * periods[coinTimePeriod] * coinTimeAmount)}`;
             }
 
-            coinResult.innerHTML = `${neededCoins > 0 ? `Calculated Coins Needed: ${formatNumber(totalCoins)}<br>${timeRequired}<br>` : ''}${coinsInTimePeriod}`;
-        } else {
-            coinResult.textContent = 'Please enter all values.';
-        }
+          coinResult.innerHTML = `${neededCoins > 0 ? `Calculated Coins Needed: ${formatNumber(totalCoins)}<br>${timeRequired}<br>` : ''}${coinsInTimePeriod}`;
+    } else {
+        coinResult.textContent = 'Please enter all values.';
     }
+}
 
     function capitalize(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
