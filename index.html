@@ -1,129 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stats and Coins Calculator</title>
     <style>
+        /* Styles */
         body {
             font-family: Arial, sans-serif;
-            background-color: #333;
-            color: #fff;
+            background-color: #1e1e1e; /* Dark background for night mode */
+            color: #ffffff; /* White text for contrast */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            flex-direction: column; /* Align items vertically */
+        }
+        .popup {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8); /* Dark overlay */
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            background-color: #2c2c2c; /* Dark background for pop-up */
+            padding: 30px; /* Increased padding */
+            border-radius: 8px; /* Rounded corners */
+            text-align: center;
+            width: 500px; /* Set width of popup */
+            max-width: 90%; /* Responsive width */
+        }
+        .popup-content img {
+            width: 100%; /* Responsive image */
+            height: auto; /* Maintain aspect ratio */
+            border-radius: 8px; /* Rounded corners for the image */
+            margin-bottom: 10px; /* Space below the image */
+        }
+        .popup-content button {
+            background-color: #007bff; /* Blue button */
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .popup-content button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
         }
         .container {
+            background-color: #2c2c2c; /* Darker container for night mode */
+            padding: 40px; /* Increased padding for better spacing */
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 1000px; /* Adjusted width for a more spacious layout */
             display: flex;
-            gap: 20px;
+        }
+        .calculator, .time-settings, .coins-calculator {
+            flex: 1; /* Take up equal space */
+            padding: 20px; /* Padding for both sections */
+            border-radius: 8px;
+            margin-right: 20px; /* Increased space between sections */
         }
         .calculator {
-            background: #444;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
+            background-color: #3c3c3c; /* Darker background for calculator */
         }
-        .calculator h2 {
-            margin-bottom: 15px;
+        .time-settings, .coins-calculator {
+            background-color: #3c3c3c; /* Darker background for time settings and coins calculator */
         }
-        .calculator label {
+        .calculator h2, .time-settings h3, .coins-calculator h3 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .calculator label, .time-settings label, .coins-calculator label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: bold;
         }
-        .calculator input[type="text"], .calculator select {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
+        .calculator input[type="text"],
+        .calculator select,
+        .time-settings input[type="text"],
+        .time-settings select,
+        .coins-calculator input[type="text"],
+        .coins-calculator select {
+            width: 90%; /* Set a fixed width for text boxes and select options */
+            max-width: 300px; /* Maximum width for better alignment */
+            padding: 12px; /* Increased padding for better usability */
+            margin-bottom: 20px;
+            border: 1px solid #555; /* Darker border */
             border-radius: 4px;
-            background-color: #555;
-            color: #fff;
+            background-color: #4a4a4a; /* Input background for night mode */
+            color: #ffffff; /* White text for inputs */
         }
-        .calculator input[type="checkbox"] {
-            margin-right: 10px;
-        }
-        .calculator button {
+        .calculator button, .time-settings button, .coins-calculator button {
             width: 100%;
-            padding: 10px;
-            background: #007bff;
+            padding: 14px; /* Increased padding for buttons */
+            background-color: #007bff; /* Blue button */
             color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
         }
-        .calculator button:hover {
-            background: #0056b3;
+        .calculator button:hover, .time-settings button:hover, .coins-calculator button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
         }
         .result {
-            margin-top: 15px;
-            font-size: 1.2em;
+            margin-top: 20px;
+            font-size: 18px;
             font-weight: bold;
+            text-align: center;
         }
     </style>
+    <title>Anime Simulator Calculator</title>
 </head>
 <body>
+
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <h3>Anime Simulator Calculator By FellowAS</h3>
+            <img src="https://i.imgur.com/oU3xwdW.jpeg" alt="Menu Image">
+            <p>I am not linked in any way to Anime Simulator, All rights belong to them. This is a calculator made by a fan for the players.</p>
+            <button onclick="closePopup()">Close</button>
+        </div>
+    </div>
+
     <div class="container">
-        <div class="calculator">
-            <h2>Stats Calculator By FellowAS</h2>
-            <label for="trainingArea">Training Area</label>
-            <select id="trainingArea">
-                <option value="1">x1</option>
-                <option value="5">x5</option>
-                <option value="15">x15</option>
-                <option value="50">x50</option>
-                <option value="100">x100</option>
-                <option value="500">x500</option>
-                <option value="1000">x1000</option>
-                <option value="2500">x2500</option>
-                <option value="5000">x5000</option>
-                <option value="10000">x10000</option>
-            </select>
-            <label for="statsMultiplier">Stats Multiplier</label>
-            <select id="statsMultiplier">
-                <option value="1">x1</option>
-                <option value="2">x2</option>
-                <option value="4">x4</option>
-                <option value="8">x8</option>
-                <option value="16">x16</option>
-                <option value="32">x32</option>
-                <option value="64">x64</option>
-                <option value="128">x128</option>
-                <option value="256">x256</option>
-                <option value="512">x512</option>
-                <option value="1024">x1024</option>
-                <option value="2048">x2048</option>
-                <option value="4096">x4096</option>
-                <option value="8192">x8192</option>
-                <option value="16384">x16.38k</option>
-                <option value="32768">x32.76k</option>
-                <option value="65536">x65.53k</option>
-                <option value="131072">x131.07k</option>
-                <option value="262144">x262.14k</option>
-                <option value="524288">x524.28k</option>
-                <option value="1048576">x1.048M</option>
-                <option value="2097152">x2.09M</option>
-                <option value="4194304">x4.19M</option>
-                <option value="8388608">x8.38M</option>
-                <option value="16777216">x16.7M</option>
-            </select>
-            <label for="statType">Stat Type</label>
-            <select id="statType">
-                <option value="Strength">Strength</option>
-                <option value="Defense">Defense</option>
-                <option value="Energy">Energy</option>
-                <option value="Sword">Sword</option>
-            </select>
-            <label><input type="checkbox" id="gamepass"> x1.5 Gamepass</label>
-            <label><input type="checkbox" id="ugc"> UGC</label>
-            <label><input type="checkbox" id="trainingBoost"> Training Boost not working properly</label>
-            <label for="currentStats">Current Stats</label>
-            <input type="text" id="currentStats" placeholder="Enter current stats">
-            <label for="neededStats">Needed Stats</label>
-            <input type="text" id="neededStats" placeholder="Enter needed stats">
+        <div class="time-settings">
+            <h3>Time Settings</h3>
             <label for="timePeriod">Select Time Period</label>
             <select id="timePeriod">
                 <option value="minute">Minute</option>
@@ -131,15 +143,61 @@
                 <option value="day">Day</option>
                 <option value="week">Week</option>
             </select>
-            <label for="timeAmount">Enter Time Amount (optional)</label>
-            <input type="text" id="timeAmount" placeholder="Enter amount (e.g., 1)">
-            <label for="championPercent">Champion %</label>
-            <input type="text" id="championPercent" placeholder="Enter Champion %">
-            <button type="button" onclick="calculateStats()">Calculate</button>
-            <div class="result" id="result"></div>
+
+            <label for="timeAmount">Enter Time Amount (Optional)</label>
+            <input type="text" id="timeAmount" placeholder="Enter time amount (e.g., 30)">
+
+            <button onclick="calculateTotalTime()">Calculate</button>
+            <div class="result" id="totalStats">Total Stats Gained: 0</div>
+
+            <!-- Ticks Quest Section -->
+            <h3>Ticks Quest</h3>
+            <label for="ticksType">Select Ticks Type</label>
+            <select id="ticksType">
+                <option value="Strength">Strength</option>
+                <option value="Defense">Defense</option>
+                <option value="Energy">Energy</option>
+            </select>
+
+            <label for="currentTicks">Current Ticks</label>
+            <input type="text" id="currentTicks" placeholder="Enter current ticks (e.g., 10000)">
+
+            <label for="ticksNeeded">Ticks Needed</label>
+            <input type="text" id="ticksNeeded" placeholder="Enter number of ticks (e.g., 60000)">
+            <button onclick="calculateTicksNeeded()">Calculate Time Needed</button>
+            <div class="result" id="ticksResult">Time Needed for Ticks: 0</div>
         </div>
+
         <div class="calculator">
-            <h2>Coins Calculator</h2>
+            <h2>Stats Calculator By FellowAS</h2>
+
+            <label for="statType">Stat Type</label>
+            <select id="statType">
+                <option value="Strength">Strength</option>
+                <option value="Defense">Defense</option>
+                <option value="Energy">Energy</option>
+                <option value="Sword">Sword</option>
+            </select>
+
+            <label for="statPerTick" id="statPerTickLabel">Stat per Tick</label>
+            <input type="text" id="statPerTick" placeholder="Enter stat gain per tick">
+
+            <label for="currentStats">Current Stats</label>
+            <input type="text" id="currentStats" placeholder="Enter current stats">
+
+            <label for="wantedStats">Wanted Stats</label>
+            <input type="text" id="wantedStats" placeholder="Enter desired stats">
+
+            <label for="championTickStat">Champion Tick Stat</label>
+            <input type="text" id="championTickStat" placeholder="Enter champion tick stat (per minute)">
+
+            <button onclick="calculateTotalStat()">Calculate</button>
+            <div class="result" id="statGainPerMinute">Stat Gain per Minute: 0</div>
+            <div class="result" id="timeToReach">Time to Reach Desired Stats:</div>
+        </div>
+
+  <div class="coins-calculator">
+            <h3>Coins Calculator</h3>
             <label for="rank">Rank</label>
             <select id="rank">
                 <option value="5">Rookie</option>
@@ -155,13 +213,19 @@
                 <option value="50000">Emperor</option>
                 <option value="100000">Elder</option>
             </select>
-            <label><input type="checkbox" id="coinsGamepass"> x2 Coins Gamepass</label>
-	    <label><input type="checkbox" id="golden"> Golden</label>
+            <label>
+                <input type="checkbox" id="x2CoinsGamepass"> x2 Coins Gamepass
+            </label>
+            <label>
+                <input type="checkbox" id="golden"> Golden
+            </label>
 
             <label for="currentCoins">Current Coins</label>
             <input type="text" id="currentCoins" placeholder="Enter current coins">
+
             <label for="neededCoins">Needed Coins</label>
             <input type="text" id="neededCoins" placeholder="Enter needed coins">
+
             <label for="coinTimePeriod">Select Time Period</label>
             <select id="coinTimePeriod">
                 <option value="minute">Minute</option>
@@ -169,151 +233,198 @@
                 <option value="day">Day</option>
                 <option value="week">Week</option>
             </select>
+
             <label for="coinTimeAmount">Enter Time Amount (optional)</label>
             <input type="text" id="coinTimeAmount" placeholder="Enter amount (e.g., 1)">
             <button type="button" onclick="calculateCoins()">Calculate</button>
-            <div class="result" id="coinResult"></div>
+            <div class="result" id="coinsResult">Coins Gained per Minute: 0</div>
         </div>
     </div>
+
     <script>
-    function parseInput(value) {
-        const regex = /^(\d+(\.\d+)?)([KMBTQDQI]*)$/;
-        const match = value.toUpperCase().match(regex);
-        const scales = {
-            K: 1E3,
-            M: 1E6,
-            B: 1E9,
-            T: 1E12,
-            QD: 1E15,
-            QI: 1E18
-        };
-        if (match) {
-            const value = parseFloat(match[1]);
-            const scale = scales[match[3]] || 1;
-            return value * scale;
-        }
-        return parseFloat(value) || 0;
-    }
-
-    function getTicksPerMinute(statType) {
-        switch(statType) {
-            case 'Strength':
-                return 60;
-            case 'Defense':
-                return 32;
-            case 'Energy':
-                return 27;
-            case 'Sword':
-                return 52;
-            default:
-                return 1;
-        }
-    }
-
-    function formatNumber(num) {
-        const scales = [
-            { value: 1E18, symbol: "QI" },
-            { value: 1E15, symbol: "QD" },
-            { value: 1E12, symbol: "T" },
-            { value: 1E9, symbol: "B" },
-            { value: 1E6, symbol: "M" },
- { value: 1E3, symbol: "K" }
-        ];
-        for (let i = 0; i < scales.length; i++) {
-            if (num >= scales[i].value) {
-                return (num / scales[i].value).toFixed(2) + scales[i].symbol;
-            }
-        }
-        return num.toFixed(2);
-    }
-
-function calculateStats() {
-    const trainingArea = parseInput(document.getElementById('trainingArea')?.value);
-    const statsMultiplier = parseInput(document.getElementById('statsMultiplier')?.value);
-    const statType = document.getElementById('statType')?.value;
-    const gamepass = document.getElementById('gamepass')?.checked;
-    const ugc = document.getElementById('ugc')?.checked;
-    const trainingBoost = document.getElementById('trainingBoost')?.checked;
-    const currentStats = parseInput(document.getElementById('currentStats')?.value);
-    const neededStats = parseInput(document.getElementById('neededStats')?.value);
-    const timePeriod = document.getElementById('timePeriod')?.value;
-    const timeAmount = parseInput(document.getElementById('timeAmount')?.value);
-    const championPercent = parseInput(document.getElementById('championPercent')?.value) / 100;
-    const result = document.getElementById('result');
-
-    console.log('Training Area:', trainingArea);
-    console.log('Stats Multiplier:', statsMultiplier);
-    console.log('Stat Type:', statType);
-    console.log('Gamepass:', gamepass);
-    console.log('UGC:', ugc);
-    console.log('Training Boost:', trainingBoost);
-    console.log('Current Stats:', currentStats);
-    console.log('Needed Stats:', neededStats);
-    console.log('Time Period:', timePeriod);
-    console.log('Time Amount:', timeAmount);
-    console.log('Champion Percent:', championPercent);
-
-    if (trainingArea !== null && statsMultiplier !== null && timePeriod !== null) {
-        let calculatedStats = trainingArea * statsMultiplier;
-        const ticksPerMinute = getTicksPerMinute(statType);
-        let statsPerTick = calculatedStats;
-
-        if (gamepass) statsPerTick *= 1.5;
-        if (ugc) statsPerTick *= 1.1;
-        if (trainingBoost) statsPerTick *= 1.5;
-
-        const championStatsPerTick = calculatedStats * (gamepass ? 1.5 : 1) * (ugc ? 1.1 : 1) * championPercent;
-        const finalStats = statsPerTick * ticksPerMinute;
-        const finalChampionStats = championPercent > 0 ? championStatsPerTick * 10 : 0; // 10 ticks per minute for Champion %
-
-        const totalStats = finalStats + finalChampionStats;
-
-        let timeRequired = '';
-        if (neededStats > 0) {
-            const statsDifference = neededStats - currentStats;
-            if (totalStats > 0) {
-                let totalMinutes = statsDifference / totalStats;
-                const days = Math.floor(totalMinutes / (60 * 24));
-                totalMinutes %= (60 * 24);
-                const hours = Math.floor(totalMinutes / 60);
-                const minutes = Math.floor(totalMinutes % 60);
-                timeRequired = `Time Required: ${days} days, ${hours} hours, and ${minutes} minutes`;
-            } else {
-                timeRequired = 'Total stats per minute is zero, cannot calculate time required.';
-            }
-        }
-
-        let periodResults = '';
-        const periods = {
-            'minute': 1,
-            'hour': 60,
-            'day': 60 * 24,
-            'week': 60 * 24 * 7
+        // Show the popup when the page loads
+        window.onload = function() {
+            document.getElementById("popup").style.display = "flex"; // Show the popup
         };
 
-        if (timeAmount && periods[timePeriod]) {
-            const statsInTimePeriod = finalStats * periods[timePeriod] * timeAmount;
-            const championStatsInTimePeriod = finalChampionStats * periods[timePeriod] * timeAmount;
-            const totalStatsInTimePeriod = statsInTimePeriod + championStatsInTimePeriod;
+        // Part 1: Utility Functions
+function parseInput(value) {
+    const regex = /^(\d+(\.\d+)?)([KMBTQDQI]*)$/;
+    const match = value.toUpperCase().match(regex);
+    const scales = {
+        K: 1E3,
+        M: 1E6,
+        B: 1E9,
+        T: 1E12,
+        QD: 1E15,
+        QI: 1E18
+    };
+    if (match) {
+        const value = parseFloat(match[1]);
+        const scale = scales[match[3]] || 1;
+        return value * scale;
+    }
+    return parseFloat(value) || 0;
+}
 
-            periodResults += `TOTAL in ${timeAmount} ${capitalize(timePeriod)}: ${formatNumber(totalStatsInTimePeriod)}<br />`;
-        }
-
-        result.innerHTML = `Amount per Tick: ${formatNumber(statsPerTick)}<br /><br />Champion Stats: ${formatNumber(finalChampionStats)} (per minute)<br /><br />Calculated ${statType} Stats: ${formatNumber(finalStats)} (per minute)<br /><br />${timeRequired}<br /><br />${periodResults}<br />TOTAL: ${formatNumber(totalStats)} (per minute)`;
-    } else {
-        result.textContent = 'Please enter all values.';
+function getTicksPerMinute(statType) {
+    switch(statType) {
+        case 'Strength':
+            return 60;
+        case 'Defense':
+            return 32;
+        case 'Energy':
+            return 27;
+        case 'Sword':
+            return 52;
+        default:
+            return 1;
     }
 }
 
+function formatNumber(num) {
+    const scales = [
+        { value: 1E18, symbol: "QI" },
+        { value: 1E15, symbol: "QD" },
+        { value: 1E12, symbol: "T" },
+        { value: 1E9, symbol: "B" },
+        { value: 1E6, symbol: "M" },
+        { value: 1E3, symbol: "K" }
+    ];
+    for (let i = 0; i < scales.length; i++) {
+        if (num >= scales[i].value) {
+            return (num / scales[i].value).toFixed(2) + scales[i].symbol;
+        }
+    }
+    return num.toFixed(2);
+}
+
+function showPopup(message) {
+    document.getElementById("popupMessage").textContent = message;
+    document.getElementById("popup").style.display = "flex"; // Show the popup
+}
+
+function closePopup() {
+    document.getElementById("popup").style.display = "none"; // Hide the popup
+}
+
+function calculateTotalStat() {
+    const statPerTick = parseInput(document.getElementById("statPerTick").value);
+    if (isNaN(statPerTick) || statPerTick === 0) {
+        showPopup("Please enter a value for Stat per Tick.");
+        return;
+    }
+
+    const statType = document.getElementById("statType").value;
+    const currentStats = parseInput(document.getElementById("currentStats").value);
+    const wantedStats = parseInput(document.getElementById("wantedStats").value);
+    const championTickStat = parseInput(document.getElementById("championTickStat").value);
+    const championTicksPerMinute = 10; // Constant for champion ticks
+
+    const ticksPerMinute = getTicksPerMinute(statType);
+    const totalStatPerMinute = (statPerTick * ticksPerMinute) + (championTickStat * championTicksPerMinute);
+    const statsToGain = wantedStats - currentStats;
+    const timeToReach = statsToGain / totalStatPerMinute;
+
+    document.getElementById("statGainPerMinute").innerText = `${statType} Gain per Minute: ${formatNumber(totalStatPerMinute)}`;
+
+    const totalSeconds = Math.max(0, timeToReach * 60); // Convert to seconds
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+
+    let timeToReachText = "";
+    if (days > 0) {
+        timeToReachText += `${days} day${days !== 1 ? 's' : ''} `;
+    }
+    if (hours > 0) {
+        timeToReachText += `${hours} hour${hours !== 1 ? 's' : ''} `;
+    }
+    if (minutes > 0) {
+        timeToReachText += `${minutes} minute${minutes !== 1 ? 's' : ''} `;
+    }
+    if (seconds > 0 || timeToReachText === "") {
+        timeToReachText += `${seconds} second${seconds !== 1 ? 's' : ''}`;
+    }
+
+    document.getElementById("timeToReach").innerText = `Time to Reach Desired Stats: ${timeToReachText.trim()}`;
+}
+
+function calculateTotalTime() {
+    const statGainPerMinute = parseInput(document.getElementById("statGainPerMinute").textContent.split(": ")[1]);
+    const timeAmount = parseFloat(document.getElementById("timeAmount").value);
+    const timePeriod = document.getElementById("timePeriod").value;
+
+    let totalTime = 0;
+    switch (timePeriod) {
+        case "minute":
+            totalTime = statGainPerMinute * timeAmount;
+            break;
+        case "hour":
+            totalTime = statGainPerMinute * 60 * timeAmount;
+            break;
+        case "day":
+            totalTime = statGainPerMinute * 1440 * timeAmount; // 24 hours
+            break;
+        case "week":
+            totalTime = statGainPerMinute * 10080 * timeAmount; // 7 days
+            break;
+        default:
+            totalTime = 0;
+            break;
+    }
+
+    document.getElementById("totalStats").innerText = `Total Stats Gained: ${formatNumber(totalTime)}`;
+}
+
+function calculateTicksNeeded() {
+    const ticksNeeded = parseInput(document.getElementById("ticksNeeded").value);
+    const currentTicks = parseInput(document.getElementById("currentTicks").value);
+    const ticksType = document.getElementById("ticksType").value;
+    const ticksPerMinute = getTicksPerMinute(ticksType);
+
+    const remainingTicks = ticksNeeded - currentTicks;
+
+    if (remainingTicks <= 0) {
+        document.getElementById("ticksResult").innerText = "You already have enough ticks!";
+        return;
+    }
+
+    const timeNeeded = remainingTicks / ticksPerMinute; // Calculate time in minutes
+    const totalSeconds = timeNeeded * 60; // Convert to seconds
+
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+
+    let timeNeededText = "";
+    if (days > 0) {
+        timeNeededText += `${days} day${days !== 1 ? 's' : ''} `;
+    }
+    if (hours > 0) {
+        timeNeededText += `${hours} hour${hours !== 1 ? 's' : ''} `;
+    }
+    if (minutes > 0) {
+        timeNeededText += `${minutes} minute${minutes !== 1 ? 's' : ''} `;
+    }
+    if (seconds > 0 || timeNeededText === "") {
+        timeNeededText += `${seconds} second${seconds !== 1 ? 's' : ''}`;
+    }
+
+    document.getElementById("ticksResult").innerText = `Time Needed for Ticks: ${timeNeededText.trim()}`;
+}
+
 function calculateCoins() {
-    const rank = parseInput(document.getElementById('rank').value);
+    const rank = parseInt(document.getElementById('rank').value);
     const coinTimePeriod = document.getElementById('coinTimePeriod').value;
     const coinTimeAmount = parseInput(document.getElementById('coinTimeAmount').value);
-    const coinsGamepass = document.getElementById('coinsGamepass').checked;
+    const coinsGamepass = document.getElementById('x2CoinsGamepass').checked;
     const golden = document.getElementById('golden').checked; // New checkbox for Golden
     const currentCoins = parseInput(document.getElementById('currentCoins').value);
     const neededCoins = parseInput(document.getElementById('neededCoins').value);
-    const coinResult = document.getElementById('coinResult');
+    const coinResult = document.getElementById('coinsResult');
 
     if (coinTimePeriod) {
         let coinsPerMinute = rank;
@@ -324,45 +435,42 @@ function calculateCoins() {
             coinsPerMinute *= 1.2; // Add 20% for Golden
         }
 
-            const periods = {
-                'minute': 1,
-                'hour': 60,
-                'day': 60 * 24,
-                'week': 60 * 24 * 7
-            };
+        const periods = {
+            'minute': 1,
+            'hour': 60,
+            'day': 60 * 24,
+            'week': 60 * 24 * 7
+        };
 
-            let totalCoins = coinsPerMinute * periods[coinTimePeriod] * (coinTimeAmount || 1);
-            let timeRequired = '';
-            let coinsInTimePeriod = '';
+        let totalCoins = coinsPerMinute * periods[coinTimePeriod] * (coinTimeAmount || 1);
+        let timeRequired = '';
+        let coinsInTimePeriod = '';
 
-            if (neededCoins > 0) {
-                const coinsDifference = neededCoins - currentCoins;
-                if (coinsDifference > 0) {
-                    let totalMinutes = coinsDifference / coinsPerMinute;
-                    const days = Math.floor(totalMinutes / (60 * 24));
-                    totalMinutes %= (60 * 24);
-                    const hours = Math.floor(totalMinutes / 60);
-                    const minutes = Math.floor(totalMinutes % 60);
-                    timeRequired = `Time Required: ${days} days, ${hours} hours, and ${minutes} minutes`;
-                } else {
-                    timeRequired = 'You already have enough coins.';
-                }
-                totalCoins = coinsDifference;
+        if (neededCoins > 0) {
+            const coinsDifference = neededCoins - currentCoins;
+            if (coinsDifference > 0) {
+                let totalMinutes = coinsDifference / coinsPerMinute;
+                const days = Math.floor(totalMinutes / (60 * 24));
+                totalMinutes %= (60 * 24);
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = Math.floor(totalMinutes % 60);
+                timeRequired = `Time Required: ${days} days, ${hours} hours, and ${minutes} minutes`;
+            } else {
+                timeRequired = 'You already have enough coins.';
             }
+            totalCoins = coinsDifference;
+        }
 
-            if (coinTimeAmount) {
-                coinsInTimePeriod = `Coins in ${coinTimeAmount} ${coinTimePeriod}(s): ${formatNumber(coinsPerMinute * periods[coinTimePeriod] * coinTimeAmount)}`;
-            }
+        if (coinTimeAmount) {
+            coinsInTimePeriod = `Coins in ${coinTimeAmount} ${coinTimePeriod}(s): ${formatNumber(coinsPerMinute * periods[coinTimePeriod] * coinTimeAmount)}`;
+        }
 
-          coinResult.innerHTML = `${neededCoins > 0 ? `Calculated Coins Needed: ${formatNumber(totalCoins)}<br>${timeRequired}<br>` : ''}${coinsInTimePeriod}`;
+        coinResult.innerHTML = `${neededCoins > 0 ? `Calculated Coins Needed: ${formatNumber(totalCoins)}<br>${timeRequired}<br>` : ''}${coinsInTimePeriod}`;
     } else {
         coinResult.textContent = 'Please enter all values.';
     }
 }
 
-    function capitalize(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-    </script>
+</script>
 </body>
 </html>
