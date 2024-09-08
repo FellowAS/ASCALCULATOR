@@ -270,7 +270,7 @@
 
         // Part 1: Utility Functions
 function parseInput(value) {
-    const regex = /^(\d+(\.\d+)?)([KMBTQDQI]*)$/;
+    const regex = /^(\d+(\.\d+)?)([KMBTQDQNSX]*)$/;
     const match = value.toUpperCase().match(regex);
     const scales = {
         K: 1E3,
@@ -278,7 +278,8 @@ function parseInput(value) {
         B: 1E9,
         T: 1E12,
         QD: 1E15,
-        QI: 1E18
+        QN: 1E18
+        SX: 1E21
     };
     if (match) {
         const value = parseFloat(match[1]);
@@ -305,7 +306,8 @@ function getTicksPerMinute(statType) {
 
 function formatNumber(num) {
     const scales = [
-        { value: 1E18, symbol: "QI" },
+        { value: 1E21, symbol: "SX" },
+        { value: 1E18, symbol: "QN" },
         { value: 1E15, symbol: "QD" },
         { value: 1E12, symbol: "T" },
         { value: 1E9, symbol: "B" },
