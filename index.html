@@ -234,6 +234,8 @@
                 <option value="100000">Elder</option>
                 <option value="500000">Overlord</option>
                 <option value="1000000">Leader</option>
+                <option value="5000000">Deity</option>
+                <option value="10000000">Sage</option>
             </select>
             <label>
                 <input type="checkbox" id="x2CoinsGamepass"> x2 Coins Gamepass
@@ -272,7 +274,7 @@
 
         // Part 1: Utility Functions
 function parseInput(value) {
-    const regex = /^(\d+(\.\d+)?)([KMBTQDQNSX]*)$/;
+    const regex = /^(\d+(\.\d+)?)([KMBTQDQNSXSP]*)$/;
     const match = value.toUpperCase().match(regex);
     const scales = {
         K: 1E3,
@@ -282,6 +284,7 @@ function parseInput(value) {
         QD: 1E15,
         QN: 1E18,
         SX: 1E21,
+        SP: 1E24,
     };
     if (match) {
         const value = parseFloat(match[1]);
@@ -308,6 +311,7 @@ function getTicksPerMinute(statType) {
 
 function formatNumber(num) {
     const scales = [
+        { value: 1E24, symbol: "SP" },
         { value: 1E21, symbol: "SX" },
         { value: 1E18, symbol: "QN" },
         { value: 1E15, symbol: "QD" },
